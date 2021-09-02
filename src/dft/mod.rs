@@ -9,9 +9,8 @@ pub fn dft(xs: &[f64], num: usize) -> std::result::Result<Vec<Complex>, String> 
 
     let step = 1.0 / num as f64;
 
-    let mut ys = vec![];
+    let mut ys = vec![Complex::zero(); num];
     for i in 0..num {
-        ys.push(Complex::new(0.0, 0.0));
         for j in 0..num {
             let phi = -2. * PI * step * i as f64 * j as f64;
             ys[i] += Complex::new(xs[j] * phi.cos(), xs[j] * phi.sin());

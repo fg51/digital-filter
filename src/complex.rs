@@ -11,6 +11,10 @@ impl Complex {
         Self { re, im }
     }
 
+    pub const fn zero() -> Self {
+        Self { re: 0., im: 0. }
+    }
+
     pub const fn re(&self) -> f64 {
         self.re
     }
