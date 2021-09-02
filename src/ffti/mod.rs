@@ -38,32 +38,29 @@ mod tests {
         }
     }
 
-    //START_TEST (ffti_f_performs_4pt_inplace_inverse_DFT)
-    //{
-    //    complex_f data[4] = {
-    //        { 10.0f , 0.0f },
-    //        { -2.0f , 2.0f },
-    //        { -2.0f , 0.0f },
-    //        { -2.0f , -2.0f }
-    //    };
-    //    complex_f expected_f_t_N[4] = {
-    //        { 4.0f , 0.0f },
-    //        { 8.0f , 0.0f },
-    //        { 12.0f , 0.0f },
-    //        { 16.0f , 0.0f }
-    //    };
-    //    int i;
-    //
-    //    ffti_f(data, 2, FFT_INVERSE);  /* 2 = log2(4) */
-    //
-    //    for (i = 0; i < 4; i++)
-    //    {
-    //        ck_assert_flt_eq_eps(data[i].re, expected_f_t_N[i].re, FLOAT_EQ_TOLERANCE);
-    //        ck_assert_flt_eq_eps(data[i].im, expected_f_t_N[i].im, FLOAT_EQ_TOLERANCE);
-    //    }
-    //}
-    //END_TEST
-    //
+    #[test]
+    fn ffti_should_performs_4pt_inplace_inverse_dft() {
+        let mut xs = [
+            Complex::new(10.0, 0.0),
+            Complex::new(-2.0, 2.0),
+            Complex::new(-2.0, 0.0),
+            Complex::new(-2.0, -2.0),
+        ];
+        let expected_ftn = [
+            Complex::new(4.0, 0.0),
+            Complex::new(8.0, 0.0),
+            Complex::new(12.0, 0.0),
+            Complex::new(16.0, 0.0),
+        ];
+
+        ffti(&mut xs, 2, Direction::Inverse); // 2 = log2(4)
+
+        for i in 0..4 {
+            assert!((xs[i].re - expected_ftn[i].re).abs() < 1E-5);
+            assert!((xs[i].im - expected_ftn[i].im).abs() < 1E-5);
+        }
+    }
+
     //START_TEST (ffti_f_performs_8pt_inplace_DFT)
     //{
     //    complex_f data[8] = {
@@ -96,8 +93,7 @@ mod tests {
     //        ck_assert_flt_eq_eps(data[i].im, expected_F_w[i].im, FLOAT_EQ_TOLERANCE);
     //    }
     //}
-    //END_TEST
-    //
+
     //START_TEST (ffti_f_performs_8pt_inplace_inverse_DFT)
     //{
     //    complex_f data[8] = {
@@ -130,8 +126,7 @@ mod tests {
     //        ck_assert_flt_eq_eps(data[i].im, expected_f_t_N[i].im, FLOAT_EQ_TOLERANCE);
     //    }
     //}
-    //END_TEST
-    //
+
     //START_TEST (ffti_f_performs_32pt_inplace_DFT)
     //{
     //    complex_f data[32] = {
@@ -212,8 +207,7 @@ mod tests {
     //        ck_assert_flt_eq_eps(data[i].im, expected_F_w[i].im, FLOAT_EQ_TOLERANCE);
     //    }
     //}
-    //END_TEST
-    //
+
     //START_TEST (ffti_f_performs_32pt_inplace_inverse_DFT)
     //{
     //    complex_f data[32] = {
