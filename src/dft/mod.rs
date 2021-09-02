@@ -1,6 +1,8 @@
 use std::f64::consts::PI;
 
-pub fn dft(xs: &[f64], num: usize) -> std::result::Result<Vec<(f64, f64)>, String> {
+use crate::complex::ComplexF64 as Complex;
+
+pub fn dft(xs: &[f64], num: usize) -> std::result::Result<Vec<Complex>, String> {
     if num < 1 {
         return Err("ERROR SIZE".to_string());
     }
@@ -9,11 +11,10 @@ pub fn dft(xs: &[f64], num: usize) -> std::result::Result<Vec<(f64, f64)>, Strin
 
     let mut ys = vec![];
     for i in 0..num {
-        ys.push((0.0, 0.0));
+        ys.push(Complex::new(0.0, 0.0));
         for j in 0..num {
             let phi = -2. * PI * step * i as f64 * j as f64;
-            ys[i].0 += xs[j] * phi.cos();
-            ys[i].1 += xs[j] * phi.sin();
+            ys[i] += Complex::new(xs[j] * phi.cos(), xs[j] * phi.sin());
         }
     }
     return Ok(ys);
@@ -32,8 +33,8 @@ mod tests {
 
         let expects = expects();
         for i in 0..num {
-            assert!((expects[i].0 - ys[i].0).abs() < 1E-2);
-            assert!((expects[i].1 - ys[i].1).abs() < 1E-2);
+            assert!((expects[i].0 - ys[i].re()).abs() < 1E-2);
+            assert!((expects[i].1 - ys[i].im()).abs() < 1E-2);
         }
     }
 

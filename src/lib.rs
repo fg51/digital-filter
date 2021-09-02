@@ -1,3 +1,4 @@
+pub mod complex;
 pub mod dft;
 
 #[cfg(test)]
