@@ -25,9 +25,7 @@ impl Complex {
     }
 }
 
-use std::ops::Add;
-
-impl Add for Complex {
+impl std::ops::Add for Complex {
     type Output = Self;
 
     fn add(self, other: Self) -> Self::Output {
@@ -38,13 +36,31 @@ impl Add for Complex {
     }
 }
 
-use std::ops::AddAssign;
-
-impl AddAssign for Complex {
+impl std::ops::AddAssign for Complex {
     fn add_assign(&mut self, other: Self) {
         *self = Self {
             re: self.re + other.re,
             im: self.im + other.im,
+        };
+    }
+}
+
+impl std::ops::Sub for Complex {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self::Output {
+        Self {
+            re: self.re - other.re,
+            im: self.im - other.im,
+        }
+    }
+}
+
+impl std::ops::SubAssign for Complex {
+    fn sub_assign(&mut self, other: Self) {
+        *self = Self {
+            re: self.re - other.re,
+            im: self.im - other.im,
         };
     }
 }
