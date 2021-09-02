@@ -10,3 +10,4 @@ publish = false
 [dependencies]
 anyhow = "1"
 thiserror = "1"
+num-complex = "*"

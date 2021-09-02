@@ -7,7 +7,7 @@ pub struct Complex {
 }
 
 impl Complex {
-    pub fn new(re: f64, im: f64) -> Self {
+    pub const fn new(re: f64, im: f64) -> Self {
         Self { re, im }
     }
 
