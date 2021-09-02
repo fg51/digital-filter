@@ -1,5 +1,4 @@
-//type Result<T> = use std::result::Result<T, String>;
-//type Result = use std::result::Result;
+#![allow(dead_code)]
 
 mod create;
 
@@ -86,18 +85,18 @@ fn fft_krn(
 
     //label_size:
     if n1 == 1 {
-        for i in 0..num {
+        for k in 0..num {
             // RE(t1[k]) = IM(t1[k]) = 0.0;
-            t1[i] = Complex::zero();
-            for j in 0..num {
-                let ij = (i * j) % num;
+            t1[k] = Complex::zero();
+            for m in 0..num {
+                let i = (k * m) % num;
                 //     RE(tmp) = CMRE(t0[m], pw[i]);
                 //     IM(tmp) = CMIM(t0[m], pw[i]);
                 //     RE(t1[k]) += RE(tmp);
                 //     IM(t1[k]) += IM(tmp);
-                t1[i] += Complex::new(
-                    t0[j].re() * pw[i + addr].re() - t0[j].im() * pw[i + addr].im(),
-                    t0[j].re() * pw[i + addr].im() + t0[j].im() * pw[i + addr].re(),
+                t1[k] += Complex::new(
+                    t0[m].re() * pw[addr + i].re() - t0[m].im() * pw[addr + i].im(),
+                    t0[m].re() * pw[addr + i].im() + t0[m].im() * pw[addr + i].re(),
                 );
             }
         }
@@ -211,7 +210,7 @@ mod tests {
 
         let xs = stub(num);
 
-        let mut fft = FFT::new(num).unwrap();
+        let fft = FFT::new(num).unwrap();
         let ys = fft.fft(&xs, num);
 
         let expects = expects();

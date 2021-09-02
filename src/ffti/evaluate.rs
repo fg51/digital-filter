@@ -1,3 +1,4 @@
+use crate::service::complex::{complex_mul_im, complex_mul_re};
 use crate::values::{Complex, Direction, PI};
 
 /*
@@ -52,89 +53,11 @@ pub fn ffti_evaluate(xs: &mut [Complex], log2n: usize, direction: Direction) {
     }
 }
 
-fn complex_mul_re(x: &Complex, y: &Complex) -> f64 {
-    x.re * y.re - x.im * y.im
-}
-
-fn complex_mul_im(x: &Complex, y: &Complex) -> f64 {
-    x.re * y.im + x.im * y.re
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    use super::super::copy_shuffle::ffti_copy_shuffle_f;
-
-    #[test]
-    fn complex_mul_re_should_multiplies_two_complex_numbers() {
-        let z1 = Complex::new(2.0, 3.0);
-        let z2 = Complex::new(4.0, 5.0);
-
-        let z3 = Complex::new(complex_mul_re(&z1, &z2), 0.0);
-        assert_eq!(z3.re, -7.0);
-    }
-
-    //START_TEST (test_complex_mul_re_multiplies_two_more_complex_f_numbers)
-    //{
-    //    complex_f z1 = { 2.0f, -3.0f };
-    //    complex_f z2 = { 4.0f, 5.0f };
-    //    complex_f z3;
-    //
-    //    z3.re = complex_mul_re(z1.re, z1.im, z2.re, z2.im);
-    //    z3.im = 0.0f;
-    //
-    //    ck_assert_flt_eq(z3.re, 23.0f);
-    //}
-    //END_TEST
-
-    //START_TEST (test_complex_mul_re_multiplies_complex_f_and_complex_d_numbers)
-    //{
-    //    complex_f z1 = { 2.0f, -3.0f };
-    //    complex_d z2 = { 4.0, 5.0 };
-    //    complex_d z3;
-    //
-    //    z3.re = complex_mul_re(z1.re, z1.im, z2.re, z2.im);
-    //    z3.im = 0.0;
-    //
-    //    ck_assert_dbl_eq(z3.re, 23.0);
-    //}
-    //END_TEST
-
-    #[test]
-    fn complex_mul_im_should_multiplies_two_complex_f_numbers() {
-        let z1 = Complex::new(2.0, 3.0);
-        let z2 = Complex::new(4.0, 5.0);
-        //    complex_f z3;
-
-        let z3 = Complex::new(0.0, complex_mul_im(&z1, &z2));
-        assert_eq!(z3.im, 22.0);
-    }
-
-    //START_TEST (test_complex_mul_im_multiplies_two_more_complex_f_numbers)
-    //{
-    //    complex_f z1 = { 2.0f, -3.0f };
-    //    complex_f z2 = { 4.0f, 5.0f };
-    //    complex_f z3;
-    //
-    //    z3.re = 0.0f;
-    //    z3.im = complex_mul_im(z1.re, z1.im, z2.re, z2.im);
-    //
-    //    ck_assert_flt_eq(z3.im, -2.0f);
-    //}
-    //END_TEST
-    //
-    //START_TEST (test_complex_mul_im_multiplies_complex_f_and_complex_d_numbers)
-    //{
-    //    complex_f z1 = { 2.0f, -3.0f };
-    //    complex_d z2 = { 4.0, 5.0 };
-    //    complex_d z3;
-    //
-    //    z3.re = 0.0;
-    //    z3.im = complex_mul_im(z1.re, z1.im, z2.re, z2.im);
-    //
-    //    ck_assert_dbl_eq(z3.im, -2.0);
-    //}
+    use super::super::shuffle::ffti_copy_shuffle;
 
     #[test]
     fn ffti_evaluate_performs_8pt_dft() {
@@ -158,11 +81,8 @@ mod tests {
             Complex::new(1.0, 0.000000),
             Complex::new(0.0, 2.414214),
         ];
-        //    complex_f data[8];
-        //    int i;
 
-        let mut xs = vec![Complex::new(0., 0.); 8];
-        ffti_copy_shuffle_f(&ts, &mut xs, 3); // 3 = log2(8)
+        let mut xs = ffti_copy_shuffle(&ts, 3); // 3 = log2(8)
 
         ffti_evaluate(&mut xs, 3, Direction::Forward); // 3 = log2(8)
 

@@ -6,8 +6,6 @@ use evaluate::ffti_evaluate;
 mod shuffle;
 use shuffle::ffti_shuffle;
 
-mod copy_shuffle;
-
 pub fn ffti(xs: &mut [Complex], log2n: usize, direction: Direction) {
     ffti_shuffle(xs, log2n);
     ffti_evaluate(xs, log2n, direction);
