@@ -9,7 +9,7 @@ pub fn freqz(
     order: usize,
     w: &[f64],
     n: usize,
-    h: &[Complex],
+    h: &mut [Complex],
 ) -> Result<()> {
     //    if(!b || !w || !h)
     //        return ERROR_PTR;

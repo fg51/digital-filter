@@ -11,3 +11,6 @@ publish = false
 anyhow = "1"
 thiserror = "1"
 num-complex = "*"
+
+[[example]]
+name = "butterworth"
