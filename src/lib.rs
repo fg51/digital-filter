@@ -10,8 +10,9 @@ pub mod dft;
 pub mod fft;
 pub mod ffti;
 
-pub mod butter;
 mod filter;
+pub mod filter_an;
+pub mod filter_ap;
 
 #[cfg(test)]
 mod tests {
