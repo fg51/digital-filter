@@ -1,3 +1,4 @@
+pub mod errors;
 mod service;
 pub mod values;
 
