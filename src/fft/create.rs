@@ -29,6 +29,7 @@ impl FFT {
                 //pfft->w = if pfft->w {
                 //          (complex_t*) realloc(pfft->w,  nw*sizeof(complex_t)) } else {
                 //          (complex_t*) malloc(           nw*sizeof(complex_t))};
+                fft.w = vec![Complex::zero(); nw];
                 for k in 0..s {
                     let phi = -2. * PI * k as f64 / s as f64;
                     fft.w[addr] = Complex::new(phi.cos(), phi.sin());
@@ -41,6 +42,7 @@ impl FFT {
                 //pfft->w = pfft->w ?
                 //          (complex_t*) realloc(pfft->w,    nw*sizeof(complex_t)):
                 //          (complex_t*) malloc(             nw*sizeof(complex_t));
+                fft.w = vec![Complex::zero(); nw];
 
                 for k in 0..n1 {
                     for m in 0..n2 {
@@ -55,9 +57,11 @@ impl FFT {
 
         //    pfft->t0 = pfft->t0 ? (complex_t*) realloc(pfft->t0, n*sizeof(complex_t)):
         //                          (complex_t*) malloc(           n*sizeof(complex_t));
+        fft.t0 = vec![Complex::zero(); n];
         //
         //    pfft->t1 = pfft->t1 ? (complex_t*) realloc(pfft->t1, n*sizeof(complex_t)):
         //                          (complex_t*) malloc(           n*sizeof(complex_t));
+        fft.t1 = vec![Complex::zero(); n];
         fft.n = n;
 
         fill_w32(&mut fft);

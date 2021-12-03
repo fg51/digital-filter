@@ -47,31 +47,36 @@ pub fn main() -> Result<()> {
     // Frequency response vector size
     let num = 1000;
 
+    todo!();
     //    /* Frequency in logarithmic scale from 0.01 to 100 rad/s */
-    let w = logspace(-2.0, 2.0, num, DSPL_SYMMETRIC);
+    //    let w = logspace(-2.0, 2.0, num, DSPL_SYMMETRIC);
+    //
+    //    //    /* Filter frequency parameter calculation */
+    //    //lib::filter_an::freq_response::FreqResponse
+    //    //filter_freq_resp(
+    //    //    b,
+    //    //    a,
+    //    //    ORD,
+    //    //    w,
+    //    //    N,
+    //    //    DSPL_FLAG_LOGMAG | DSPL_FLAG_UNWRAP | DSPL_FLAG_ANALOG,
+    //    //    mag,
+    //    //    phi,
+    //    //    tau,
+    //    //);
+    //    let res = lib::filter_an::freq_response::FreqResponse::analog(&b, &a, order, w, num).unwrap();
+    //    let mag = res.mag(true);
+    //
+    //    //    /* Write Magnitude, phase response and group delay to the files */
+    //    let writer = BufWriter::new(File::create("dat/butter_ap_test_mag.txt")?);
+    //    for i in 0..num {
+    //        writeln!(writer, "{},{}", w[i], mag[i],)?;
+    //    }
+    //    //    writetxt(w, phi, N, "dat/butter_ap_test_phi.txt");
+    //    //    writetxt(w, tau, N, "dat/butter_ap_test_tau.txt");
+    //    Ok(())
+}
 
-    //    /* Filter frequency parameter calculation */
-    //lib::filter_an::freq_response::FreqResponse
-    //filter_freq_resp(
-    //    b,
-    //    a,
-    //    ORD,
-    //    w,
-    //    N,
-    //    DSPL_FLAG_LOGMAG | DSPL_FLAG_UNWRAP | DSPL_FLAG_ANALOG,
-    //    mag,
-    //    phi,
-    //    tau,
-    //);
-    let res = lib::filter_an::freq_response::FreqResponse::analog(&b, &a, order, w, num).unwrap();
-    let mag = res.mag(true);
-
-    //    /* Write Magnitude, phase response and group delay to the files */
-    let writer = BufWriter::new(File::create("dat/butter_ap_test_mag.txt")?);
-    for i in 0..num {
-        writeln!(writer, "{},{}", w[i], mag[i],)?;
-    }
-    //    writetxt(w, phi, N, "dat/butter_ap_test_phi.txt");
-    //    writetxt(w, tau, N, "dat/butter_ap_test_tau.txt");
-    Ok(())
+fn logspace(a: f64, b: f64, c: usize, d: u32) {
+    todo!();
 }
