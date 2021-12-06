@@ -46,7 +46,7 @@ pub fn fft(xs: &[f64]) -> Vec<Complex> {
         .map(|i| ys_even[i] + w_n[i] * ys_odd[i])
         .collect();
     //F[N//2:N] = F_even - W_N * F_odd    #(10)を計算(t:N/2~N-1)
-    let zs1: Vec<Complex> = ((num / 2)..num)
+    let zs1: Vec<Complex> = (0..(num / 2))
         .map(|i| ys_even[i] - w_n[i] * ys_odd[i])
         .collect();
     zs.extend(zs1);
