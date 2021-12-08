@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 pub mod freq_response;
 
 mod freqs;

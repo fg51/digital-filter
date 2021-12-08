@@ -10,6 +10,7 @@ use crate::values::Complex;
  * So in order to compute the next bit-reversed index, we
  * have to flip a sequence of most-significant bits.
  */
+#[allow(dead_code)]
 pub fn ffti_copy_shuffle(src: &[Complex], log2n: usize) -> Vec<Complex> {
     let num = 1 << log2n;
     let nd2 = num >> 1; /* N/2 = number range midpoint */
