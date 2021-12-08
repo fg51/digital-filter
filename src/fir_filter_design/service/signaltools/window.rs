@@ -76,7 +76,7 @@ use super::kaiser::kaiser;
 //            0.97885093,  0.82160913,  0.56437221,  0.29425961])
 //
 //    """
-use super::super::super::firwin::WindowKind;
+use super::super::super::values::WindowKind;
 
 //def get_window(window, Nx, fftbins=True):
 pub fn get_window(window: WindowKind, nx: usize, fftbins: Option<bool>) -> Vec<f64> {
@@ -117,11 +117,6 @@ pub fn get_window(window: WindowKind, nx: usize, fftbins: Option<bool>) -> Vec<f
     //    winfunc = kaiser
     //    params = (Nx, beta, sym)
     match window {
-        WindowKind::Value(beta) => {
-            //let winfunc = kaiser;
-            //let params = (Nx, beta, sym);
-            todo!()
-        }
         WindowKind::Kaiser(arg) => {
             //        winfunc = _win_equiv["kaiser"]
             //        if len(window) > 1:
@@ -137,11 +132,8 @@ pub fn get_window(window: WindowKind, nx: usize, fftbins: Option<bool>) -> Vec<f
             //        params = (Nx,) + args + (sym,)
             return hamming(nx, sym);
         }
-        _ => {
-            //    return winfunc(*params)
-            todo!()
-        }
     }
+    //    return winfunc(*params)
 }
 
 //_win_equiv_raw = {

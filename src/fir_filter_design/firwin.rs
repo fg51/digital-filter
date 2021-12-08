@@ -79,37 +79,7 @@ use std::f64::consts::PI;
 
 use super::service::get_fs;
 use super::service::signaltools::window::get_window;
-
-pub enum WindowKind {
-    Hamming,
-    Kaiser(f64),
-    Value(f64),
-}
-//_win_equiv_raw = {
-//    ('barthann', 'brthan', 'bth'): (barthann, False),
-//    ('bartlett', 'bart', 'brt'): (bartlett, False),
-//    ('blackman', 'black', 'blk'): (blackman, False),
-//    ('blackmanharris', 'blackharr', 'bkh'): (blackmanharris, False),
-//    ('bohman', 'bman', 'bmn'): (bohman, False),
-//    ('boxcar', 'box', 'ones',
-//        'rect', 'rectangular'): (boxcar, False),
-//    ('chebwin', 'cheb'): (chebwin, True),
-//    ('cosine', 'halfcosine'): (cosine, False),
-//    ('dpss',): (dpss, True),
-//    ('exponential', 'poisson'): (exponential, True),
-//    ('flattop', 'flat', 'flt'): (flattop, False),
-//    ('gaussian', 'gauss', 'gss'): (gaussian, True),
-//    ('general gaussian', 'general_gaussian',
-//        'general gauss', 'general_gauss', 'ggs'): (general_gaussian, True),
-//    ('hamming', 'hamm', 'ham'): (hamming, False),
-//    ('hanning', 'hann', 'han'): (hann, False),
-//    ('kaiser', 'ksr'): (kaiser, True),
-//    ('nuttall', 'nutl', 'nut'): (nuttall, False),
-//    ('parzen', 'parz', 'par'): (parzen, False),
-//    ('taylor', 'taylorwin'): (taylor, False),
-//    ('triangle', 'triang', 'tri'): (triang, False),
-//    ('tukey', 'tuk'): (tukey, True),
-//}
+use super::values::WindowKind;
 
 //def firwin(numtaps, cutoff, width=None, window='hamming', pass_zero=True,
 //           scale=True, nyq=None, fs=None):

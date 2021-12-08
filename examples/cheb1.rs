@@ -1,0 +1,32 @@
+use digital_filter as lib;
+
+use lib::filter_design::{
+    iirfilter::iirfilter,
+    values::{FilterForm, FilterKind, IIRFilterKind},
+};
+
+pub fn main() {
+    let fs = 48000.;
+    let bpfc1 = 100.;
+    let order = 2;
+    let rs = 40;
+    let rp = 1.0;
+    let analog = false;
+    let ftype = IIRFilterKind::Chebyshev1;
+    let output = FilterForm::Ba;
+    let (b, a) = iirfilter(
+        order,
+        &[bpfc1],
+        Some(rp),
+        Some(rs),
+        Some(FilterKind::LowPass),
+        Some(analog),
+        Some(ftype),
+        Some(output),
+        Some(fs),
+    );
+
+    for i in b {
+        println!("{}", i);
+    }
+}

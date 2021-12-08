@@ -4,6 +4,15 @@ pub use polyval::polyval;
 mod linspace;
 pub use linspace::linspace;
 
+mod prod;
+pub use prod::prod;
+
+mod lp2lp_zpk;
+pub use lp2lp_zpk::lp2lp_zpk;
+
+mod zpk2tf;
+pub use zpk2tf::zpk2tf;
+
 pub mod sp_fft {
     pub fn next_fast_len(n: usize) -> usize {
         good_size_cmplx(n)

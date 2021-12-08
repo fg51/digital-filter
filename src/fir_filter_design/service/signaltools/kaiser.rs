@@ -117,7 +117,6 @@ pub fn kaiser(m: usize, beta: f64, sym: Option<bool>) -> Vec<f64> {
     let alpha = (m as f64 - 1.) / 2.0;
     //w = (special.i0(beta * np.sqrt(1 - ((n - alpha) / alpha) ** 2.0)) /
     //     special.i0(beta))
-    let denom = i0(beta);
     let mut w = Vec::with_capacity(m);
     w.resize(m, 0.);
     for i in 0..m {
