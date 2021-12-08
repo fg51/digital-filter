@@ -1,4 +1,5 @@
-use crate::errors::Result;
+pub type Result<T> = std::result::Result<T, String>;
+
 use crate::polyval::poly_z2a_cmplx;
 use crate::values::Complex;
 

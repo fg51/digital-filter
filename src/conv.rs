@@ -1,6 +1,7 @@
-use crate::errors::Result;
 use crate::service::complex::{complex_mul_im, complex_mul_re};
 use crate::values::Complex;
+
+pub type Result<T> = std::result::Result<T, String>;
 
 // int DSPL_API conv_cmplx(complex_t* a, int na, complex_t* b, int nb, complex_t* c)
 pub fn conv_cmplx(

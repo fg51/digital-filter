@@ -2,7 +2,7 @@ use std::f64::consts::PI;
 
 use crate::complex::Complex;
 
-use crate::errors::Result;
+pub type Result<T> = std::result::Result<T, String>;
 
 use super::FFT;
 

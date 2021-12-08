@@ -1,4 +1,4 @@
-use crate::errors::Result;
+pub type Result<T> = std::result::Result<T, String>;
 
 pub fn phase_unwrap(phi: &mut [f64], num: usize, lev: f64, mar: f64) -> Result<()> {
     //    double a[2] = {0.0, 0.0};

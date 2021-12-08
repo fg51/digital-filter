@@ -2,7 +2,7 @@ use crate::conv::conv_cmplx;
 use crate::service::complex::{complex_mul_im, complex_mul_re};
 use crate::values::Complex;
 
-use crate::errors::Result;
+pub type Result<T> = std::result::Result<T, String>;
 
 pub fn poly_z2a_cmplx(z: &[Complex], nz: usize, ord: usize) -> Result<Vec<Complex>> {
     //  if(!z || !a)

@@ -1,7 +1,7 @@
 use crate::values::Complex;
 use crate::values::PI;
 
-use crate::errors::Result;
+pub type Result<T> = std::result::Result<T, String>;
 
 //int DSPL_API butter_ap_zp(int ord, double rp, complex_t* z, int* nz,
 pub fn butter_ap_zp(

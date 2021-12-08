@@ -1,4 +1,5 @@
-use crate::errors::Result;
+pub type Result<T> = std::result::Result<T, String>;
+
 use crate::values::Complex;
 use crate::values::PI;
 

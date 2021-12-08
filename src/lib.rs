@@ -15,6 +15,7 @@ pub mod filter_an;
 pub mod filter_ap;
 
 pub mod filter_design;
+pub mod fir_filter_design;
 
 #[cfg(test)]
 mod tests {

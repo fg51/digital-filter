@@ -2,7 +2,7 @@ use std::f64::consts::PI;
 
 use crate::complex::ComplexF64 as Complex;
 
-use crate::errors::Result;
+pub type Result<T> = std::result::Result<T, String>;
 
 pub fn dft(xs: &[f64], num: usize) -> Result<Vec<Complex>> {
     if num < 1 {

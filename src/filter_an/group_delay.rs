@@ -1,4 +1,4 @@
-use crate::errors::Result;
+pub type Result<T> = std::result::Result<T, String>;
 
 use super::DSPL_FLAG_ANALOG;
 
