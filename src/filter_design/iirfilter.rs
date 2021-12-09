@@ -125,9 +125,12 @@
 //    >>> ax.grid(which='both', axis='both')
 //    >>> plt.show()
 
+use super::service::lp2bp_zpk;
+use super::service::lp2hp_zpk;
 use super::service::lp2lp_zpk;
 use super::service::zpk2tf;
 use super::values::{FilterForm, FilterKind, IIRFilterKind};
+use crate::errors::{ErrorKind, Result};
 
 //def iirfilter(N, Wn, rp=None, rs=None, btype='band', analog=False, ftype='butter', output='ba', fs=None):
 pub fn iirfilter(
@@ -140,7 +143,7 @@ pub fn iirfilter(
     ftype: Option<IIRFilterKind>,
     output: Option<FilterForm>,
     fs: Option<f64>,
-) -> (Vec<f64>, Vec<f64>) {
+) -> Result<(Vec<f64>, Vec<f64>)> {
     let analog = match analog {
         Some(analog) => analog,
         None => false,
@@ -164,7 +167,13 @@ pub fn iirfilter(
     //typefunc = filter_dict[ftype][0]
 
     //if rp is not None and rp < 0:
-    //    raise ValueError("passband ripple (rp) must be positive")
+    if let Some(rp) = rp {
+        if rp < 0. {
+            return Err(ErrorKind::ValueError(
+                "passband ripple (rp) must be positive".to_string(),
+            ));
+        }
+    }
 
     //if rs is not None and rs < 0:
     //    raise ValueError("stopband attenuation (rs) must be positive")
@@ -174,8 +183,6 @@ pub fn iirfilter(
         Some(IIRFilterKind::Butterworth) | None => {
             //if typefunc == buttap:
             buttap(num)
-            //    z, p, k = typefunc(N)
-            //todo!()
         }
         Some(IIRFilterKind::Bessel) => {
             //elif typefunc == besselap:
@@ -184,24 +191,32 @@ pub fn iirfilter(
         }
         Some(IIRFilterKind::Chebyshev1) => {
             //elif typefunc == cheb1ap:
-            //    if rp is None:
-            //        raise ValueError("passband ripple (rp) must be provided to "
-            //                         "design a Chebyshev I filter.")
+            if rp.is_none() {
+                return Err(ErrorKind::ValueError(
+                    "passband ripple (rp) must be provided to design a Chebyshev I filter."
+                        .to_string(),
+                ));
+            }
             cheb1ap(num, rp.unwrap())
         }
         Some(IIRFilterKind::Chebyshev2) => {
             //elif typefunc == cheb2ap:
-            //    if rs is None:
-            //        raise ValueError("stopband attenuation (rs) must be provided to "
-            //                         "design an Chebyshev II filter.")
+            if rs.is_none() {
+                return Err(ErrorKind::ValueError(
+                    "stopband attenuation (rs) must be provided to design an Chebyshev II filter."
+                        .to_string(),
+                ));
+            }
             //    z, p, k = typefunc(N, rs)
             todo!()
         }
         Some(IIRFilterKind::Elliptic) => {
             //elif typefunc == ellipap:
-            //    if rs is None or rp is None:
-            //        raise ValueError("Both rp and rs must be provided to design an "
-            //                         "elliptic filter.")
+            if rs.is_none() | rp.is_none() {
+                return Err(ErrorKind::ValueError(
+                    "Both rp and rs must be provided to design an elliptic filter.".to_string(),
+                ));
+            }
             //    z, p, k = typefunc(N, rp, rs)
             todo!()
         } //else:
@@ -210,12 +225,18 @@ pub fn iirfilter(
 
     // Pre-warp frequencies for digital filter design
     let (warped, fs) = if analog == false {
-        //    if numpy.any(Wn <= 0) or numpy.any(Wn >= 1):
-        //        if fs is not None:
-        //            raise ValueError("Digital filter critical frequencies "
-        //                             "must be 0 < Wn < fs/2 (fs={} -> fs/2={})".format(fs, fs/2))
-        //        raise ValueError("Digital filter critical frequencies "
-        //                         "must be 0 < Wn < 1")
+        if is_ranged(&wn) == false {
+            if let Some(fs) = fs {
+                return Err(ErrorKind::ValueError(format!(
+                    "Digital filter critical frequencies must be 0 < Wn < fs/2 (fs={} -> fs/2={})",
+                    fs,
+                    fs / 2.
+                )));
+            }
+            return Err(ErrorKind::ValueError(
+                "Digital filter critical frequencies must be 0 < Wn < 1".to_string(),
+            ));
+        }
         let fs = 2.0;
         let warped = wn.iter().map(|x| 2. * fs * ((PI * x / fs).tan())).collect();
         (warped, Some(fs))
@@ -237,24 +258,22 @@ pub fn iirfilter(
             //    if numpy.size(Wn) != 1:
             //        raise ValueError('Must specify a single critical frequency Wn for lowpass or highpass filter')
             //    elif btype == 'highpass':
-            //        z, p, k = lp2hp_zpk(z, p, k, wo=warped)
-            todo!()
+            lp2hp_zpk(&z, &p, k, Some(warped[0]))
         }
-        //elif btype in ('bandpass', 'bandstop'):
-        //    try:
-        //        bw = warped[1] - warped[0]
-        //        wo = sqrt(warped[0] * warped[1])
-        //    except IndexError as e:
-        //        raise ValueError('Wn must specify start and stop frequencies for bandpass or bandstop '
-        //                         'filter') from e
         Some(FilterKind::BandPass) | None => {
             //elif btype in ('bandpass', 'bandstop'):
-            //    try:
-            //        bw = warped[1] - warped[0]
-            //        wo = sqrt(warped[0] * warped[1])
+            if warped.len() < 2 {
+                return Err(ErrorKind::ValueError(
+                    "Wn must specify start and stop frequencies for bandpass or bandstop "
+                        .to_string(),
+                ));
+            }
+
+            let bw = warped[1] - warped[0];
+            let wo = (warped[0] * warped[1]).sqrt();
             //    if btype == 'bandpass':
-            //        z, p, k = lp2bp_zpk(z, p, k, wo=wo, bw=bw)
-            todo!()
+            //lp2bp_zpk(&z, &p, k, Some(wo), Some(bw))
+            todo!();
         } //    elif btype == 'bandstop':
         Some(FilterKind::BandStop) => {
             //elif btype in ('bandpass', 'bandstop'):
@@ -284,7 +303,7 @@ pub fn iirfilter(
             //    return zpk2sos(z, p, k)
             todo!()
         }
-        Some(FilterForm::Ba) | None => return zpk2tf(&z, &p, k),
+        Some(FilterForm::Ba) | None => return Ok(zpk2tf(&z, &p, k)),
     };
 }
 
@@ -472,4 +491,17 @@ fn bilinear_zpk(z: &[f64], p: &[Complex], k: f64, fs: f64) -> (Vec<f64>, Vec<Com
     //let k_z = k * real(prod(fs2 - z) / prod(fs2 - p))
 
     return (z_z, p_z, k_z);
+}
+
+fn is_ranged(wn: &[f64]) -> bool {
+    let (min, max) = (0., 1.);
+    for &i in wn {
+        if i <= min {
+            return false;
+        }
+        if i >= max {
+            return false;
+        }
+    }
+    return true;
 }

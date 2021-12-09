@@ -1,3 +1,5 @@
+use anyhow::Result;
+
 use digital_filter as lib;
 
 use lib::filter_design::{
@@ -5,7 +7,7 @@ use lib::filter_design::{
     values::{FilterForm, FilterKind, IIRFilterKind},
 };
 
-pub fn main() {
+pub fn main() -> Result<()> {
     let fs = 48000.;
     let bpfc1 = 100.;
     let order = 2;
@@ -24,7 +26,7 @@ pub fn main() {
         Some(ftype),
         Some(output),
         Some(fs),
-    );
+    )?;
 
     println!("b");
     for i in b {
@@ -34,4 +36,5 @@ pub fn main() {
     for i in a {
         println!("{:e}", i);
     }
+    Ok(())
 }

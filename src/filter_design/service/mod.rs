@@ -10,6 +10,12 @@ pub use prod::prod;
 mod lp2lp_zpk;
 pub use lp2lp_zpk::lp2lp_zpk;
 
+mod lp2hp_zpk;
+pub use lp2hp_zpk::lp2hp_zpk;
+
+mod lp2bp_zpk;
+pub use lp2bp_zpk::lp2bp_zpk;
+
 mod zpk2tf;
 pub use zpk2tf::zpk2tf;
 
