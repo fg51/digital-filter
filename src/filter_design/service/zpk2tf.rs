@@ -18,27 +18,31 @@
 
 //"""
 
+use super::polynominal::Poly;
 use num_complex::Complex64 as Complex;
 
 //def zpk2tf(z, p, k):
 pub fn zpk2tf(z: &[f64], p: &[Complex], k: f64) -> (Vec<f64>, Vec<f64>) {
+    //println("{:?}", z);
+
     //z = atleast_1d(z)
     //k = atleast_1d(k)
     //if len(z.shape) > 1:
-    let b = if false {
+    let b: Vec<f64> = if false {
         //    temp = poly(z[0])
         //    b = np.empty((z.shape[0], z.shape[1] + 1), temp.dtype.char)
         //    if len(k) == 1:
         //        k = [k[0]] * z.shape[0]
         //    for i in range(z.shape[0]):
         //        b[i] = k[i] * poly(z[i])
+        todo!()
     } else {
-        k * poly(z)
+        f64::poly(z).into_iter().map(|x| k * x).collect()
     };
-    let a = poly(p); // atleast_1d(poly(p))
+    let a = Complex::poly(p); // atleast_1d(poly(p))
 
-    //# Use real output if possible. Copied from numpy.poly, since
-    //# we can't depend on a specific version of numpy.
+    // Use real output if possible. Copied from numpy.poly, since
+    // we can't depend on a specific version of numpy.
     //if issubclass(b.dtype.type, numpy.complexfloating):
     //    # if complex roots are all complex conjugates, the roots are real.
     //    roots = numpy.asarray(z, complex)
@@ -59,13 +63,6 @@ pub fn zpk2tf(z: &[f64], p: &[Complex], k: f64) -> (Vec<f64>, Vec<f64>) {
     //                     numpy.sort_complex(pos_roots)):
     //            a = a.real.copy()
 
-    //return b, a
-    todo!();
-}
-
-// poly([-1,1,1,10]) = [1, -11, 9, 11, -10]
-// (x-1)(x+1)(x+1)(x+10) = 1*x^4 -11 * x^3 + 9 * x^2 + 11 * x^1 -10
-fn poly(xs: &[f64]) -> Vec<f64> {
-    let mut ys = vec![1.];
-    todo!();
+    let a = a.into_iter().map(|x| x.re).collect();
+    return (b, a);
 }

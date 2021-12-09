@@ -13,6 +13,11 @@ pub use lp2lp_zpk::lp2lp_zpk;
 mod zpk2tf;
 pub use zpk2tf::zpk2tf;
 
+mod polynominal;
+
+mod relative_degree;
+pub use relative_degree::relative_degree;
+
 pub mod sp_fft {
     pub fn next_fast_len(n: usize) -> usize {
         good_size_cmplx(n)

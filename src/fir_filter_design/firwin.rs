@@ -118,9 +118,10 @@ pub fn firwin(
     if (cutoff.iter().fold(0. / 0., |m, v| v.min(m)) <= 0.)
         | (cutoff.iter().fold(0. / 0., |m, v| v.max(m)) >= 1.)
     {
-        //    raise ValueError("Invalid cutoff frequency: frequencies must be "
-        //                     "greater than 0 and less than fs/2.")
-        return Err(ErrorKind::ValueError);
+        return Err(ErrorKind::ValueError(
+            "Invalid cutoff frequency: frequencies must be greater than 0 and less than fs/2."
+                .to_string(),
+        ));
     }
 
     //if np.any(np.diff(cutoff) <= 0):
@@ -173,7 +174,8 @@ pub fn firwin(
     if pass_nyquist & ((numtaps & 1) == 0) {
         //    raise ValueError("A filter with an even number of coefficients must "
         //                     "have zero response at the Nyquist frequency.")
-        return Err(ErrorKind::ValueError);
+        return Err(ErrorKind::ValueError(
+        "A filter with an even number of coefficients must have zero response at the Nyquist frequency.".to_string()));
     }
 
     //# Insert 0 and/or 1 at the ends of cutoff so that the length of cutoff

@@ -9,7 +9,7 @@ pub fn main() {
     let fs = 48000.;
     let bpfc1 = 100.;
     let order = 2;
-    let rs = 40;
+    let rs = 40.;
     let rp = 1.0;
     let analog = false;
     let ftype = IIRFilterKind::Chebyshev1;
@@ -26,7 +26,12 @@ pub fn main() {
         Some(fs),
     );
 
+    println!("b");
     for i in b {
-        println!("{}", i);
+        println!("{:e}", i);
+    }
+    println!("a");
+    for i in a {
+        println!("{:e}", i);
     }
 }

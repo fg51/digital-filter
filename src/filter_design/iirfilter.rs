@@ -209,18 +209,18 @@ pub fn iirfilter(
     };
 
     // Pre-warp frequencies for digital filter design
-    let warped = if analog {
+    let (warped, fs) = if analog == false {
         //    if numpy.any(Wn <= 0) or numpy.any(Wn >= 1):
         //        if fs is not None:
         //            raise ValueError("Digital filter critical frequencies "
         //                             "must be 0 < Wn < fs/2 (fs={} -> fs/2={})".format(fs, fs/2))
         //        raise ValueError("Digital filter critical frequencies "
         //                         "must be 0 < Wn < 1")
-        //    fs = 2.0
-        //    warped = 2 * fs * tan(pi * Wn / fs)
-        todo!();
+        let fs = 2.0;
+        let warped = wn.iter().map(|x| 2. * fs * ((PI * x / fs).tan())).collect();
+        (warped, Some(fs))
     } else {
-        wn
+        (wn, fs)
     };
 
     // transform to lowpass, bandpass, highpass, or bandstop
@@ -268,9 +268,8 @@ pub fn iirfilter(
     };
 
     // Find discrete equivalent if necessary
-    let (z, p, k) = if analog {
-        // bilinear_zpk(z, p, k, fs=fs)
-        todo!();
+    let (z, p, k) = if analog == false {
+        bilinear_zpk(&z, &p, k, fs.unwrap())
     } else {
         (z, p, k)
     };
@@ -375,4 +374,102 @@ fn cheb1ap(num: usize, rp: f64) -> (Vec<f64>, Vec<Complex>, f64) {
         }
     };
     return (z, p, k);
+}
+
+use super::service::relative_degree; //::relative_degree;
+                                     //Return a digital IIR filter from an analog one using a bilinear transform.
+
+//Transform a set of poles and zeros from the analog s-plane to the digital
+//z-plane using Tustin's method, which substitutes ``(z-1) / (z+1)`` for
+//``s``, maintaining the shape of the frequency response.
+
+//Parameters
+//----------
+//z : array_like
+//    Zeros of the analog filter transfer function.
+//p : array_like
+//    Poles of the analog filter transfer function.
+//k : float
+//    System gain of the analog filter transfer function.
+//fs : float
+//    Sample rate, as ordinary frequency (e.g., hertz). No prewarping is
+//    done in this function.
+
+//Returns
+//-------
+//z : ndarray
+//    Zeros of the transformed digital filter transfer function.
+//p : ndarray
+//    Poles of the transformed digital filter transfer function.
+//k : float
+//    System gain of the transformed digital filter.
+
+//See Also
+//--------
+//lp2lp_zpk, lp2hp_zpk, lp2bp_zpk, lp2bs_zpk
+//bilinear
+
+//Notes
+//-----
+//.. versionadded:: 1.1.0
+
+//Examples
+//--------
+//>>> from scipy import signal
+//>>> import matplotlib.pyplot as plt
+
+//>>> fs = 100
+//>>> bf = 2 * np.pi * np.array([7, 13])
+//>>> filts = signal.lti(*signal.butter(4, bf, btype='bandpass', analog=True,
+//...                                   output='zpk'))
+//>>> filtz = signal.lti(*signal.bilinear_zpk(filts.zeros, filts.poles,
+//...                                         filts.gain, fs))
+//>>> wz, hz = signal.freqz_zpk(filtz.zeros, filtz.poles, filtz.gain)
+//>>> ws, hs = signal.freqs_zpk(filts.zeros, filts.poles, filts.gain,
+//...                           worN=fs*wz)
+//>>> plt.semilogx(wz*fs/(2*np.pi), 20*np.log10(np.abs(hz).clip(1e-15)),
+//...              label=r'$|H_z(e^{j \omega})|$')
+//>>> plt.semilogx(wz*fs/(2*np.pi), 20*np.log10(np.abs(hs).clip(1e-15)),
+//...              label=r'$|H(j \omega)|$')
+//>>> plt.legend()
+//>>> plt.xlabel('Frequency [Hz]')
+//>>> plt.ylabel('Magnitude [dB]')
+//>>> plt.grid()
+//"""
+//def bilinear_zpk(z, p, k, fs):
+fn bilinear_zpk(z: &[f64], p: &[Complex], k: f64, fs: f64) -> (Vec<f64>, Vec<Complex>, f64) {
+    //z = atleast_1d(z)
+    //p = atleast_1d(p)
+
+    let degree = relative_degree(z, p);
+
+    let fs2 = 2.0 * fs;
+
+    // Bilinear transform the poles and zeros
+    let mut z_z: Vec<f64> = z.iter().map(|z| (fs2 + z) / (fs2 - z)).collect();
+    let p_z: Vec<Complex> = p.iter().map(|p| (fs2 + p) / (fs2 - p)).collect();
+
+    // Any zeros that were at infinity get moved to the Nyquist frequency
+    //z_z = append(z_z, -ones(degree))
+    z_z.extend(vec![-1.; degree]);
+
+    // Compensate for gain change
+    let prod_fsz = {
+        let mut fsz = 1.;
+        for i in z.iter() {
+            fsz *= fs2 - i;
+        }
+        fsz
+    };
+    let prod_fsp = {
+        let mut fsp = Complex::new(1., 0.);
+        for i in p.iter() {
+            fsp *= Complex::new(fs2, 0.) - i;
+        }
+        fsp
+    };
+    let k_z = k * ((Complex::new(prod_fsz, 0.) / prod_fsp).re);
+    //let k_z = k * real(prod(fs2 - z) / prod(fs2 - p))
+
+    return (z_z, p_z, k_z);
 }

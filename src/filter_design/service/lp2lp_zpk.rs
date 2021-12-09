@@ -1,3 +1,5 @@
+use super::relative_degree;
+
 //    r"""
 //    Transform a lowpass filter prototype to a different frequency.
 //
@@ -66,22 +68,22 @@ pub fn lp2lp_zpk(
 
     // Each shifted pole decreases gain by wo, each shifted zero increases it.
     // Cancel out the net change to keep overall gain the same
-    let k_lp = k * (wo.powf(degree));
+    let k_lp = k * (wo.powf(degree as f64));
 
     return (z_lp, p_lp, k_lp);
 }
 
-//    """
-//    Return relative degree of transfer function from zeros and poles
-//    """
-//def _relative_degree(z, p):
-fn relative_degree(z: &[f64], p: &[Complex]) -> f64 {
-    let degree = p.len() as isize - z.len() as isize;
-    if degree < 0 {
-        //        raise ValueError("Improper transfer function. "
-        //                         "Must have at least as many poles as zeros.")
-        todo!();
-    } else {
-        degree as f64
-    }
-}
+// //    """
+// //    Return relative degree of transfer function from zeros and poles
+// //    """
+// //def _relative_degree(z, p):
+// fn relative_degree(z: &[f64], p: &[Complex]) -> f64 {
+//     let degree = p.len() as isize - z.len() as isize;
+//     if degree < 0 {
+//         //        raise ValueError("Improper transfer function. "
+//         //                         "Must have at least as many poles as zeros.")
+//         todo!();
+//     } else {
+//         degree as f64
+//     }
+// }
