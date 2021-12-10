@@ -149,24 +149,19 @@ pub fn iirfilter(
         None => false,
     };
 
-    //ftype, btype, output = [x.lower() for x in (ftype, btype, output)]
-    //Wn = asarray(Wn)
     let wn: Vec<f64> = match fs {
         Some(fs) => {
             if analog {
-                // raise ValueError("fs cannot be specified for an analog filter")
-                todo!();
+                return Err(ErrorKind::ValueError(
+                    "fs cannot be specified for an analog filter".to_string(),
+                ));
             } else {
-                //    Wn = 2*Wn/fs
                 wn.iter().map(|w| 2. * w / fs).collect()
             }
         }
         None => wn.iter().map(|w| *w).collect(),
     };
 
-    //typefunc = filter_dict[ftype][0]
-
-    //if rp is not None and rp < 0:
     if let Some(rp) = rp {
         if rp < 0. {
             return Err(ErrorKind::ValueError(
@@ -175,8 +170,13 @@ pub fn iirfilter(
         }
     }
 
-    //if rs is not None and rs < 0:
-    //    raise ValueError("stopband attenuation (rs) must be positive")
+    if let Some(rs) = rs {
+        if rs < 0. {
+            return Err(ErrorKind::ValueError(
+                "stopband attenuation (rs) must be positive".to_string(),
+            ));
+        }
+    }
 
     // Get analog lowpass prototype
     let (z, p, k) = match ftype {
@@ -187,6 +187,8 @@ pub fn iirfilter(
         Some(IIRFilterKind::Bessel) => {
             //elif typefunc == besselap:
             //    z, p, k = typefunc(N, norm=bessel_norms[ftype])
+            // z,p,k = besselap(num, rs); //  z, p, k = typefunc(N, rs)
+            //  bessel_norms = 'phase'(default), delay', 'mag'}
             todo!()
         }
         Some(IIRFilterKind::Chebyshev1) => {
@@ -207,7 +209,8 @@ pub fn iirfilter(
                         .to_string(),
                 ));
             }
-            //    z, p, k = typefunc(N, rs)
+            //z, p, k = cheb2ap(num, rs.unwrap());
+
             todo!()
         }
         Some(IIRFilterKind::Elliptic) => {
@@ -218,28 +221,29 @@ pub fn iirfilter(
                 ));
             }
             //    z, p, k = typefunc(N, rp, rs)
+            // z, p, k = ellipap(num, rp.unwrap(), rs.unwrap());
             todo!()
-        } //else:
-          //    raise NotImplementedError("'%s' not implemented in iirfilter." % ftype)
+        }
     };
 
     // Pre-warp frequencies for digital filter design
     let (warped, fs) = if analog == false {
-        if is_ranged(&wn) == false {
-            if let Some(fs) = fs {
-                return Err(ErrorKind::ValueError(format!(
-                    "Digital filter critical frequencies must be 0 < Wn < fs/2 (fs={} -> fs/2={})",
-                    fs,
-                    fs / 2.
-                )));
-            }
-            return Err(ErrorKind::ValueError(
-                "Digital filter critical frequencies must be 0 < Wn < 1".to_string(),
-            ));
-        }
-        let fs = 2.0;
-        let warped = wn.iter().map(|x| 2. * fs * ((PI * x / fs).tan())).collect();
-        (warped, Some(fs))
+        pre_warp(&wn, fs)?
+        //if is_ranged(&wn) == false {
+        //    if let Some(fs) = fs {
+        //        return Err(ErrorKind::ValueError(format!(
+        //            "Digital filter critical frequencies must be 0 < Wn < fs/2 (fs={} -> fs/2={})",
+        //            fs,
+        //            fs / 2.
+        //        )));
+        //    }
+        //    return Err(ErrorKind::ValueError(
+        //        "Digital filter critical frequencies must be 0 < Wn < 1".to_string(),
+        //    ));
+        //}
+        //let fs = 2.0;
+        //let warped = wn.iter().map(|x| 2. * fs * ((PI * x / fs).tan())).collect();
+        //(warped, Some(fs))
     } else {
         (wn, fs)
     };
@@ -269,18 +273,18 @@ pub fn iirfilter(
                 ));
             }
 
-            let bw = warped[1] - warped[0];
-            let wo = (warped[0] * warped[1]).sqrt();
+            let _bw = warped[1] - warped[0];
+            let _wo = (warped[0] * warped[1]).sqrt();
             //    if btype == 'bandpass':
-            //lp2bp_zpk(&z, &p, k, Some(wo), Some(bw))
+            // z, p, klp2bp_zpk(&z, &p, k, Some(wo), Some(bw));
             todo!();
         } //    elif btype == 'bandstop':
         Some(FilterKind::BandStop) => {
             //elif btype in ('bandpass', 'bandstop'):
             //    try:
-            //        bw = warped[1] - warped[0]
-            //        wo = sqrt(warped[0] * warped[1])
-            //        z, p, k = lp2bs_zpk(z, p, k, wo=wo, bw=bw)
+            let _bw = warped[1] - warped[0];
+            let _wo = (warped[0] * warped[1]).sqrt();
+            //  z, p, k = lp2bs_zpk(&z,&p, k, Some(wo), Some(bw));
             todo!()
         } //else:
           //    raise NotImplementedError("'%s' not implemented in iirfilter." % btype)
@@ -310,14 +314,8 @@ pub fn iirfilter(
 use num_complex::Complex64 as Complex;
 use std::f64::consts::{E, PI};
 
-// """Return (z,p,k) for analog prototype of Nth-order Butterworth filter.
-//
+// Return (z,p,k) for analog prototype of Nth-order Butterworth filter.
 // The filter will have an angular (e.g., rad/s) cutoff frequency of 1.
-//
-// See Also
-// --------
-// butter : Filter design function using this prototype
-//def buttap(N):
 fn buttap(num: usize) -> (Vec<f64>, Vec<Complex>, f64) {
     //if abs(int(N)) != N:
     //    raise ValueError("Filter order must be a nonnegative integer")
@@ -343,20 +341,11 @@ fn arange(start: f64, stop: f64, step: f64) -> Vec<f64> {
     return xs;
 }
 
-//    """
-//    Return (z,p,k) for Nth-order Chebyshev type I analog lowpass filter.
+// Return (z,p,k) for Nth-order Chebyshev type I analog lowpass filter.
+// The returned filter prototype has `rp` decibels of ripple in the passband.
 //
-//    The returned filter prototype has `rp` decibels of ripple in the passband.
-//
-//    The filter's angular (e.g. rad/s) cutoff frequency is normalized to 1,
-//    defined as the point at which the gain first drops below ``-rp``.
-//
-//    See Also
-//    --------
-//    cheby1 : Filter design function using this prototype
-//
-//    """
-//def cheb1ap(N, rp):
+// The filter's angular (e.g. rad/s) cutoff frequency is normalized to 1,
+// defined as the point at which the gain first drops below ``-rp``.
 fn cheb1ap(num: usize, rp: f64) -> (Vec<f64>, Vec<Complex>, f64) {
     //if abs(int(N)) != N:
     //    raise ValueError("Filter order must be a nonnegative integer")
@@ -504,4 +493,23 @@ fn is_ranged(wn: &[f64]) -> bool {
         }
     }
     return true;
+}
+
+// Pre-warp frequencies for digital filter design
+fn pre_warp(wn: &[f64], fs: Option<f64>) -> Result<(Vec<f64>, Option<f64>)> {
+    if is_ranged(&wn) == false {
+        if let Some(fs) = fs {
+            return Err(ErrorKind::ValueError(format!(
+                "Digital filter critical frequencies must be 0 < Wn < fs/2 (fs={} -> fs/2={})",
+                fs,
+                fs / 2.
+            )));
+        }
+        return Err(ErrorKind::ValueError(
+            "Digital filter critical frequencies must be 0 < Wn < 1".to_string(),
+        ));
+    }
+    let fs = 2.0;
+    let warped = wn.iter().map(|x| 2. * fs * ((PI * x / fs).tan())).collect();
+    Ok((warped, Some(fs)))
 }
